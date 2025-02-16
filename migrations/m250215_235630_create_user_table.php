@@ -29,7 +29,7 @@ class m250215_235630_create_user_table extends Migration
             'origin_country_id' => $this->integer()->notNull(),
             'origin_city_id' => $this->integer()->notNull(),
             'marriage_preference' => "ENUM('NO', 'YES','MAYBE') default 'MAYBE' NOT NULL",
-            'marital_status' => "ENUM('MARRIED', 'SINGLE','SEPARATED','WIDOW') default 'NONE' NOT NULL",
+            'marital_status' => "ENUM('MARRIED', 'SINGLE','SEPARATED','WIDOW','DIVORCED','NONE') default 'NONE' NOT NULL",
             'has_children' => $this->boolean()->defaultValue(0),
             'children_count' => $this->integer()->null(),
             'education_level' => "ENUM('MIDDLE_SCHOOL', 'HIGH_SCHOOL', 'UNIVERSITY','MASTER','DOCTORATE','NONE') default 'NONE' NOT NULL",
@@ -39,7 +39,7 @@ class m250215_235630_create_user_table extends Migration
             'auth_key' => $this->string(32)->notNull(),
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
             'religious_commitment' => "ENUM('COMMITTED', 'NOT_COMMITTED', 'ABANDONED', 'NONE') default 'NONE' NOT NULL",
-            'communication_preference' => "ENUM('DIRECT', 'WITH_FAMILY') default 'NONE' NOT NULL",
+            'communication_preference' => "ENUM('DIRECT', 'WITH_FAMILY','NONE') default 'NONE' NOT NULL",
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
 
