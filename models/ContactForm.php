@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Carbon\Carbon;
 use Yii;
 use yii\base\Model;
 
@@ -61,5 +62,25 @@ class ContactForm extends Model
             return true;
         }
         return false;
+    }
+
+
+
+    public function beforeSave($insert)
+    {
+        $today = Carbon::now("Asia/Amman");
+        if (parent::beforeSave($insert)) {
+            // Place your custom code here
+            if ($this->isNewRecord) {
+                $this->created_at = $today;
+                $this->updated_at = $today;
+            } else {
+                $this->updated_at = $today;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }

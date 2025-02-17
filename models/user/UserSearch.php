@@ -17,9 +17,8 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'phone_number', 'second_phone', 'residence_country_id', 'residence_city_id', 'origin_country_id', 'origin_city_id', 'has_children', 'children_count', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['full_name', 'email', 'date_of_birth', 'gender', 'hijab_status', 'religion', 'marriage_preference', 'marital_status', 'education_level', 'profession', 'skin_color', 'password_hash', 'auth_key', 'religious_commitment', 'communication_preference'], 'safe'],
-            [['height', 'weight'], 'number'],
+            [['id', 'type', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['username', 'name', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'avatar'], 'safe'],
         ];
     }
 
@@ -36,11 +35,10 @@ class UserSearch extends User
      * Creates data provider instance with search query applied
      *
      * @param array $params
-     * @param string|null $formName Form name to be used into `->load()` method.
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $formName = null)
+    public function search($params)
     {
         $query = User::find();
 
@@ -50,7 +48,7 @@ class UserSearch extends User
             'query' => $query,
         ]);
 
-        $this->load($params, $formName);
+        $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -58,39 +56,23 @@ class UserSearch extends User
             return $dataProvider;
         }
 
+        $query->where(['!=', 'type', User::SUPER_ADMIN]);
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'phone_number' => $this->phone_number,
-            'second_phone' => $this->second_phone,
-            'date_of_birth' => $this->date_of_birth,
-            'height' => $this->height,
-            'weight' => $this->weight,
-            'residence_country_id' => $this->residence_country_id,
-            'residence_city_id' => $this->residence_city_id,
-            'origin_country_id' => $this->origin_country_id,
-            'origin_city_id' => $this->origin_city_id,
-            'has_children' => $this->has_children,
-            'children_count' => $this->children_count,
+            'type' => $this->type,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'full_name', $this->full_name])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'gender', $this->gender])
-            ->andFilterWhere(['like', 'hijab_status', $this->hijab_status])
-            ->andFilterWhere(['like', 'religion', $this->religion])
-            ->andFilterWhere(['like', 'marriage_preference', $this->marriage_preference])
-            ->andFilterWhere(['like', 'marital_status', $this->marital_status])
-            ->andFilterWhere(['like', 'education_level', $this->education_level])
-            ->andFilterWhere(['like', 'profession', $this->profession])
-            ->andFilterWhere(['like', 'skin_color', $this->skin_color])
-            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
+        $query->andFilterWhere(['like', 'username', $this->username])
+            ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'auth_key', $this->auth_key])
-            ->andFilterWhere(['like', 'religious_commitment', $this->religious_commitment])
-            ->andFilterWhere(['like', 'communication_preference', $this->communication_preference]);
+            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
+            ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'avatar', $this->avatar]);
 
         return $dataProvider;
     }

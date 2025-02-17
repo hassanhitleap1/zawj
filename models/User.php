@@ -1,22 +1,36 @@
 <?php
 
 namespace app\models;
+
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
-class User extends  ActiveRecord implements IdentityInterface
+/**
+ * User model
+ *
+ * @property integer $id
+ * @property string $username
+ * @property string $password_hash
+ * @property string $password_reset_token
+ * @property string $verification_token
+ * @property string $email
+ * @property string $auth_key
+ * @property integer $status
+ * @property integer $created_at
+ * @property integer $updated_at
+ * @property string $avatar
+ * * @property string $password write-only password
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
-    const SUPER_ADMIN=1;
-    const USER=2;
-    const DATA_ENTERY=3;
-
-
+    const ADMIN = 2;
+    const SUPER_ADMIN = 1;
     /**
      * {@inheritdoc}
      */
@@ -74,6 +88,17 @@ class User extends  ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Finds user by username
+     *
+     * @param string $username
+     * @return static|null
+     */
+    public static function findByEmail($username)
+    {
+        return static::findOne(['email' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
      * Finds user by password reset token
      *
      * @param string $token password reset token
@@ -97,7 +122,8 @@ class User extends  ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
@@ -197,4 +223,8 @@ class User extends  ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
+
+
+
+
 }

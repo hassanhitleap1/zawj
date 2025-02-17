@@ -8,7 +8,7 @@ use yii\base\Model;
 /**
  * LoginForm is the model behind the login form.
  *
- * @property-read User|null $user This property is read-only.
+ * @property-read User|null $user
  *
  */
 class LoginForm extends Model
@@ -34,22 +34,6 @@ class LoginForm extends Model
             ['password', 'validatePassword'],
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-
-            'username' => Yii::t('app', 'Username'),
-            'password' => Yii::t('app', 'Password'),
-            'rememberMe' => Yii::t('app', 'RememberMe'),
-         
-        ];
-    }
-    
-
 
     /**
      * Validates the password.

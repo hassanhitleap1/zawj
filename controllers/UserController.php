@@ -4,15 +4,27 @@ namespace app\controllers;
 
 use app\models\user\User;
 use app\models\user\UserSearch;
+use yii\helpers\FileHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
+use Yii;
 
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
+
+    public function beforeAction($action)
+    {
+        $this->layout = "admin";
+        if (Yii::$app->user->identity->type == User::ADMIN) {
+            return $this->redirect(['admin/index']);
+        }
+        return $action;
+    }
     /**
      * @inheritDoc
      */
@@ -69,8 +81,32 @@ class UserController extends Controller
     {
         $model = new User();
 
+
+        $model->scenario = User::SCENARIO_CREATE;
+        $newId = User::find()->max('id') + 1;
+
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+            if ($model->load($this->request->post()) && $model->validate()) {
+
+
+                $file = UploadedFile::getInstance($model, 'file');
+
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+
+                if (!empty($file)) {
+                    $folder_path = "images/users/$newId";
+                    FileHelper::createDirectory(
+                        "$folder_path",
+                        $mode = 0775,
+                        $recursive = true
+                    );
+                    $file_path = "$folder_path/" . "image." . $file->extension;
+                    $file->saveAs($file_path);
+                    $model->avatar = $file_path;
+
+                }
+
+                $model->save();
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
@@ -93,7 +129,36 @@ class UserController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+
+        $model->scenario = User::SCENARIO_UPDATE;
+        $newId = $model->id;
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->validate()) {
+
+            $file = UploadedFile::getInstance($model, 'file');
+
+            if (!is_null($model->password)) {
+                $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+            }
+
+            if (!empty($file)) {
+                $folder_path = "images/users/$newId";
+                FileHelper::createDirectory(
+                    "$folder_path",
+                    $mode = 0775,
+                    $recursive = true
+                );
+
+                $file_path = "$folder_path/" . "image." . $file->extension;
+                $file->saveAs($file_path);
+                $model->avatar = $file_path;
+
+
+            }
+
+            $model->save();
+
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
